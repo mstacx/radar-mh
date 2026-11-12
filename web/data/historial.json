@@ -878,7 +878,7 @@
    "salud"
   ],
   "primera_vez": "2026-11-11",
-  "ultima_vez": "2026-11-11"
+  "ultima_vez": "2026-11-12"
  },
  "https://news.google.com/rss/articles/CBMitwFBVV95cUxQU0VEMjZjOXdvekJteFNXR2JZWEo1bUYzOWpFeTgzMnJUZTVtcmg4NjVFeV8waGp4NDY4T1pvMnRlRFJlNERYdkdIaFBzdHpvX2kzNlBMR1g2VEVfYzB3N1JGTDNYZldIX3UteVFhZUw0V2V2b2U5RjI1SGE4VXhrQjljVjFhVldKSjExSVlzc3RlQXlWNEUzc3lNM2ZCUmRJNHBmMTBXTk9UYzBfM3IzT3JmeWU2eUk?oc=5": {
   "fuente": "Google News: primera infancia y educación rural",
@@ -4022,7 +4022,7 @@
   },
   "palabras": [],
   "primera_vez": "2026-11-11",
-  "ultima_vez": "2026-11-11"
+  "ultima_vez": "2026-11-12"
  },
  "https://news.google.com/rss/articles/CBMiowFBVV95cUxPeHpfY0Q3cWtDb0t6MWFNSnJjdnZ0YnJYN2xTYkxLMkpkV1l0bzFLNlZDbHhqT3N2am1SbHRMalZpeEVIZjB3MEh3SDMzZEh1ZUgzZDNoeURidGl5X0ZIN1JZUUZIcF9QVGo5MDg3Q0I3SjlwZ09fd2wwZW0xdDRqX3JQUW1jN25jQTBJc09sZ0hEajJ4UEM5V1FlTExua214cXBj0gGoAUFVX3lxTE51VUswT0NicTFXNngwc0JXdUEzeURRSnphWTd6blUzZjE1dElHWkEteUtiZFFOeHlQYThjRGYxajZSUFJxcklfb1F3c1UxTGZ2WTJvZjVwT211MzZpbENmZ01jdDZac0hNbWpDVjBCaHN4dDk3YkkxZTBXX1JWRmFRTkRwYm5Kd0RQa0ptR1AwMDhsSlhVYzVwXy0xazlXZGZTTkZUNE5aNw?oc=5": {
   "fuente": "Google News: anemia y nutrición",
@@ -4555,6 +4555,30 @@
    "desnutricion",
    "nutricion"
   ],
+  "primera_vez": "2026-11-12",
+  "ultima_vez": "2026-11-12"
+ },
+ "https://news.google.com/rss/articles/CBMiogFBVV95cUxQMDk3cFBRR0o2d3o3U09FZDdSQjNaQ2Etd29NVkJFTDhyNEpPeEpHNDdIdWZ6M2hsOXd6OFY2R2htb0luLTYySW1xNjZjbVhHVGxFNzNWT3ZuY3RVZVl4bVVCc1k1di1JVmx1NDVjNzhUQXU1WTUwc2lnbGdmLXVBN2FJZEVCMXlucDUwQmhrM0xYODY3VEo4ZXJ0RktzdEhiNXc?oc=5": {
+  "fuente": "Google News: anemia y nutrición",
+  "tipo_fuente": "Búsqueda en noticias",
+  "entidad": "Afondo Noticias -",
+  "titulo": "Leyes de papel y silencio: En México estamos dejando solos a nuestros bebés",
+  "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQMDk3cFBRR0o2d3o3U09FZDdSQjNaQ2Etd29NVkJFTDhyNEpPeEpHNDdIdWZ6M2hsOXd6OFY2R2htb0luLTYySW1xNjZjbVhHVGxFNzNWT3ZuY3RVZVl4bVVCc1k1di1JVmx1NDVjNzhUQXU1WTUwc2lnbGdmLXVBN2FJZEVCMXlucDUwQmhrM0xYODY3VEo4ZXJ0RktzdEhiNXc?oc=5",
+  "resumen": "",
+  "publicado": "2026-11-11",
+  "deadline": null,
+  "areas": [],
+  "clase": "Señal",
+  "score": 0,
+  "nivel": "Baja",
+  "detalle": {
+   "Area": 0,
+   "Geo": 0,
+   "Contexto": 0,
+   "Elegibilidad": 0,
+   "Negativa": 0
+  },
+  "palabras": [],
   "primera_vez": "2026-11-12",
   "ultima_vez": "2026-11-12"
  }
