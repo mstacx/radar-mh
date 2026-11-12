@@ -30,7 +30,7 @@ import urllib.parse
 import urllib.request
 import uuid
 import xml.etree.ElementTree as ET
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 
@@ -347,7 +347,7 @@ def main():
             vistos.update({r["url"], clave_titulo})
             unicos.append(r)
 
-    generado = datetime.now().isoformat(timespec="seconds")
+    generado = datetime.now(timezone.utc).isoformat(timespec="seconds")  # con zona: el navegador lo pasa a hora local
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out = OUT_DIR / f"radar_{hoy.isoformat()}.json"
     out.write_text(json.dumps({"generado": generado, "fuentes": estado, "items": unicos}, ensure_ascii=False, indent=2),
