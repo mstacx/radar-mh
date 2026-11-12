@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Radar MH</title>
+  <meta name="description" content="Radar de oportunidades de financiamiento de Misión Huascarán: convocatorias reales, puntuadas por afinidad y actualizadas a diario.">
+  <link rel="stylesheet" href="styles.css?v=2">
+</head>
+<body>
+  <header class="top">
+    <div class="marca">
+      <span class="logo" aria-hidden="true">MH</span>
+      <div>
+        <h1>Radar de oportunidades</h1>
+        <p class="sub">Misión Huascarán · Educación, Nutrición y Salud en Áncash</p>
+      </div>
+    </div>
+    <p id="estado" class="estado" role="status">Cargando datos…</p>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Secciones">
+    <button role="tab" data-vista="resumen" aria-selected="true">Resumen</button>
+    <button role="tab" data-vista="convocatorias">Convocatorias <span class="n" id="n-conv"></span></button>
+    <button role="tab" data-vista="senales">Señales <span class="n" id="n-sen"></span></button>
+    <button role="tab" data-vista="fondos">Fondos recurrentes</button>
+    <button role="tab" data-vista="metodo">Fuentes y método</button>
+  </nav>
+
+  <main>
+    <!-- RESUMEN -->
+    <section id="v-resumen" class="vista">
+      <div class="kpis" id="kpis"></div>
+      <div class="dos">
+        <div class="panel">
+          <h2>Mejores convocatorias vigentes</h2>
+          <p class="nota">Solo las que superan el mínimo de afinidad (score ≥ 15).</p>
+          <ol class="lista" id="top-conv"></ol>
+        </div>
+        <div class="panel">
+          <h2>Cierran pronto</h2>
+          <ol class="lista" id="cierran"></ol>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Fondos recurrentes para preparar</h2>
+        <ol class="lista" id="fondos-pronto"></ol>
+      </div>
+    </section>
+
+    <!-- CONVOCATORIAS / SEÑALES (misma plantilla) -->
+    <section id="v-convocatorias" class="vista" hidden>
+      <p class="ayuda">Convocatorias a las que una ONG puede postular, leídas de fuentes reales y ordenadas por <b>afinidad con MH</b> (0-100). Pasa el cursor por el puntaje para ver por qué obtuvo esa nota.</p>
+      <div class="filtros" data-para="convocatorias"></div>
+      <div class="tarjetas" id="lista-convocatorias"></div>
+    </section>
+    <section id="v-senales" class="vista" hidden>
+      <p class="ayuda">Noticias que no son convocatorias, pero sirven para actuar: un fondo que se anuncia, una empresa que invierte en Áncash, un premio que se abre. Son buenas razones para escribir a un aliado o prospecto.</p>
+      <div class="filtros" data-para="senales"></div>
+      <div class="tarjetas" id="lista-senales"></div>
+    </section>
+
+    <!-- FONDOS -->
+    <section id="v-fondos" class="vista" hidden>
+      <p class="ayuda">Fondos que abren todos los años o reciben postulaciones de forma continua. Se avisa con <b>90 días</b> de anticipación, porque preparar una postulación toma tiempo. Los meses marcados como estimados se deben verificar con la fuente.</p>
+      <div class="tarjetas" id="lista-fondos"></div>
+    </section>
+
+    <!-- MÉTODO -->
+    <section id="v-metodo" class="vista" hidden>
+      <div class="dos">
+        <div class="panel">
+          <h2>Estado de las fuentes</h2>
+          <table class="tabla" id="tabla-fuentes"></table>
+        </div>
+        <div class="panel">
+          <h2>Cómo se calcula la afinidad</h2>
+          <table class="tabla">
+            <thead><tr><th>Componente</th><th>Tope</th><th>Ejemplos</th></tr></thead>
+            <tbody>
+              <tr><td>Área MH</td><td>+40</td><td>anemia, nutrición, primera infancia, educación, telemedicina, salud</td></tr>
+              <tr><td>Geografía</td><td>+30</td><td>Perú, Áncash, Andes, América Latina</td></tr>
+              <tr><td>Elegibilidad ONG</td><td>+20</td><td>ONG, sin fines de lucro, sociedad civil</td></tr>
+              <tr><td>Población</td><td>+15</td><td>rural, niños, indígena, comunidades</td></tr>
+              <tr><td>Exclusiones</td><td>−40</td><td>becas, startups, programas de otros continentes</td></tr>
+            </tbody>
+          </table>
+          <p class="nota"><b>Alta ≥ 55</b> · <b>Media 35–54</b> · Baja &lt; 35. Es la misma fórmula que la hoja Radar del MH Fundraising Hub: los pesos se editan allí y en <code>radar_convocatorias.py</code>.</p>
+          <h2>Qué es y qué no es</h2>
+          <ul class="nota">
+            <li>Todo lo que ves fue leído de una fuente pública. Nada se inventa y cada tarjeta enlaza a su origen.</li>
+            <li>Un día sin convocatorias de afinidad alta es un resultado real: el filtro está descartando ruido.</li>
+            <li>El pipeline de postulaciones, los contactos y los convenios de MH <b>no</b> están aquí: viven en el Hub (Excel interno), porque esta página puede ser pública.</li>
+            <li>Favoritos y descartados se guardan solo en este navegador. Para trabajar una oportunidad, usa «Copiar para el Hub».</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <span>MH Fundraising Hub · Radar · 180 Degrees Consulting UP</span>
+    <button id="exportar" class="btn-sec">Descargar CSV de lo filtrado</button>
+  </footer>
+
+  <template id="tpl-tarjeta">
+    <article class="tarjeta">
+      <div class="t-cab">
+        <span class="fuente"></span>
+        <span class="badges"></span>
+      </div>
+      <h3><a target="_blank" rel="noopener noreferrer"></a></h3>
+      <p class="resumen"></p>
+      <div class="t-meta"></div>
+      <div class="t-acciones">
+        <button class="fav" aria-pressed="false" title="Marcar como favorita">☆ Favorita</button>
+        <button class="copiar" title="Copia una fila lista para pegar en la hoja Radar del Hub">Copiar para el Hub</button>
+        <button class="descartar" title="Ocultar en este navegador">Descartar</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="app.js?v=3"></script>
+</body>
+</html>

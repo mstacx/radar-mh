@@ -1,0 +1,50 @@
+# GitHub Actions: corre el radar cada mañana, guarda el historial y publica la web en GitHub Pages.
+# Va en .github/workflows/radar.yml del repositorio que arma preparar_repo_radar.py.
+name: Radar MH diario
+
+on:
+  schedule:
+    - cron: "0 11 * * *"   # 06:00 hora de Lima (UTC-5)
+  workflow_dispatch:         # botón "Run workflow" para correrlo a mano
+
+permissions:
+  contents: write            # guardar data/historial.json entre corridas
+  pages: write
+  id-token: write
+
+concurrency:
+  group: radar-mh
+  cancel-in-progress: false
+
+jobs:
+  radar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Leer fuentes y puntuar
+        run: python motor/radar_convocatorias.py --web web/data
+
+      - name: Guardar datos del día
+        run: |
+          git config user.name "radar-mh-bot"
+          git config user.email "radar-mh-bot@users.noreply.github.com"
+          git add web/data
+          git diff --cached --quiet || git commit -m "Radar: actualización $(date -u +%F)"
+          git push
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
