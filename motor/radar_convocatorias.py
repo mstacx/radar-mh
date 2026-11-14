@@ -8,10 +8,11 @@ verificada). Clasifica cada ítem (convocatoria o señal, área y deadline) y gu
   4-salidas/data/radar_<fecha>.json         corrida del día (insumo del Hub)
   <--web DIR>/radar.json + fondos.json      datos de la web del Radar (acumulados con historial)
 
-Fuentes (verificadas el 11-nov-2026):
-  - RSS de agregadores de fondos (fundsforNGOs, Opportunity Desk), PROCIENCIA y ProActivo
-  - Búsquedas curadas en Google News (RSS público, sin cuenta), en español y en inglés
-  - API pública del portal de fondos de la Unión Europea (llamados EuropeAid a sociedad civil)
+Tres clases de resultado, separadas a propósito (revisión del 14-nov-2026):
+  - Convocatorias: SOLO desde fuentes oficiales (fuentes_oficiales.py), con afinidad MH en 5 componentes.
+  - Pistas por verificar: lo que publican los agregadores (fundsforNGOs, Opportunity Desk, PROCIENCIA).
+  - Señales: noticias (ProActivo, búsquedas de Google News) con tipo, por qué importa y siguiente paso.
+El score por palabras clave (relevancia temática) se mantiene igual que en la hoja Radar del Hub.
 
 Uso:
     python radar_convocatorias.py                         # corrida del día
@@ -47,35 +48,24 @@ def google_news(q: str, idioma: str = "es") -> str:
 
 # Fuentes RSS. El flujo F1 de Power Automate puede leerlas todas, incluidas las de Google News.
 FUENTES = [
-    {"fuente": "fundsforNGOs (global)", "url": "https://www2.fundsforngos.org/feed/", "tipo": "Agregador internacional"},
-    {"fuente": "fundsforNGOs News", "url": "https://news.fundsforngos.org/feed/", "tipo": "Agregador internacional"},
-    {"fuente": "fundsforNGOs Donors", "url": "https://donors.fundsforngos.org/feed/", "tipo": "Agregador internacional"},
-    {"fuente": "Opportunity Desk", "url": "https://www.opportunitydesk.org/feed/", "tipo": "Agregador internacional"},
-    {"fuente": "PROCIENCIA (CONCYTEC)", "url": "https://prociencia.gob.pe/feed/", "tipo": "Fondo público Perú"},
-    {"fuente": "ProActivo (RSE Perú)", "url": "https://proactivo.com.pe/feed/", "tipo": "Señales corporativas Perú"},
-    {"fuente": "Google News: fondos concursables Perú", "tipo": "Búsqueda en noticias",
+    {"fuente": "fundsforNGOs News", "url": "https://news.fundsforngos.org/feed/", "tipo": "Agregador internacional", "categoria": "Descubrimiento"},
+    {"fuente": "fundsforNGOs Donors", "url": "https://donors.fundsforngos.org/feed/", "tipo": "Agregador internacional", "categoria": "Descubrimiento"},
+    {"fuente": "Opportunity Desk", "url": "https://www.opportunitydesk.org/feed/", "tipo": "Agregador internacional", "categoria": "Descubrimiento"},
+    {"fuente": "PROCIENCIA (CONCYTEC)", "url": "https://prociencia.gob.pe/feed/", "tipo": "Fondo público Perú", "categoria": "Descubrimiento"},
+    {"fuente": "ProActivo (RSE Perú)", "url": "https://proactivo.com.pe/feed/", "tipo": "Señales corporativas Perú", "categoria": "Señales"},
+    {"fuente": "Google News: fondos concursables Perú", "tipo": "Búsqueda en noticias", "categoria": "Señales",
      "url": google_news('"fondos concursables" OR "fondo concursable" Perú when:30d')},
-    {"fuente": "Google News: convocatorias ONG Perú", "tipo": "Búsqueda en noticias",
+    {"fuente": "Google News: convocatorias ONG Perú", "tipo": "Búsqueda en noticias", "categoria": "Señales",
      "url": google_news('convocatoria (ONG OR "sin fines de lucro" OR "sociedad civil") Perú when:30d')},
-    {"fuente": "Google News: anemia y nutrición", "tipo": "Búsqueda en noticias",
+    {"fuente": "Google News: anemia y nutrición", "tipo": "Búsqueda en noticias", "categoria": "Señales",
      "url": google_news('(convocatoria OR premio OR fondo) (anemia OR desnutrición OR "nutrición infantil") when:30d')},
-    {"fuente": "Google News: primera infancia y educación rural", "tipo": "Búsqueda en noticias",
+    {"fuente": "Google News: primera infancia y educación rural", "tipo": "Búsqueda en noticias", "categoria": "Señales",
      "url": google_news('(convocatoria OR fondo OR premio) ("primera infancia" OR "educación rural") when:30d')},
-    {"fuente": "Google News: inversión social Áncash", "tipo": "Señales corporativas Perú",
+    {"fuente": "Google News: inversión social Áncash", "tipo": "Señales corporativas Perú", "categoria": "Señales",
      "url": google_news('("responsabilidad social" OR "inversión social") (Áncash OR Huaraz OR Antamina) when:30d')},
-    {"fuente": "Google News: grants NGOs Latin America", "tipo": "Búsqueda en noticias",
+    {"fuente": "Google News: grants NGOs Latin America", "tipo": "Búsqueda en noticias", "categoria": "Señales",
      "url": google_news('("call for proposals" OR "grant") NGOs "Latin America" when:30d', "en")},
 ]
-
-# API pública del portal Funding & Tenders de la Comisión Europea (convocatorias con deadline).
-EU_API = "https://api.tech.ec.europa.eu/search-api/prod/rest/search"
-# Solo llamados "EuropeAid": los publican las delegaciones de la UE para la sociedad civil de cada país.
-# Las convocatorias Horizon (investigación) no aplican a MH y se descartan.
-EU_CONSULTAS = ["EuropeAid civil society", "EuropeAid Latin America", "EuropeAid Peru", "EuropeAid nutrition"]
-PAISES_UE = {"PE": "Perú", "BO": "Bolivia", "EC": "Ecuador", "CO": "Colombia", "CL": "Chile", "AR": "Argentina",
-             "BR": "Brasil", "PY": "Paraguay", "UY": "Uruguay", "VE": "Venezuela", "MX": "México", "GT": "Guatemala",
-             "HN": "Honduras", "SV": "El Salvador", "NI": "Nicaragua", "CR": "Costa Rica", "PA": "Panamá",
-             "DO": "República Dominicana", "HT": "Haití", "CU": "Cuba"}  # los códigos son de país ISO (AL = Albania, no se incluye)
 
 # Palabras clave: (texto a buscar, categoría, peso). Búsqueda sin distinguir
 # mayúsculas ni tildes, por subcadena (equivalente a SEARCH() en Excel).
@@ -219,24 +209,65 @@ AREAS = {
     "Educación": r"educa|school|escuela|colegio|literacy|lectura|lectora|teacher|docente|primera infancia|"
                  r"early childhood|biblioteca|library",
     "Salud": r"salud|health|m[eé]dic|telemedic|cl[ií]nic|hospital|maternal|saneamiento|sanitation",
+    "Desarrollo rural": r"rural|comunidades? campesinas?|andin|agricult|productiv",
 }
-CONVOCATORIA = (r"convocatoria|call for|applications? (?:are )?open|postula|deadline|fondos? concursables?|"
-                r"grant|premio|award|request for (?:proposals|applications)|nominations|subvenci|financiamiento para")
+TERRITORIO = r"[áa]ncash|huaraz|carhuaz|yungay|huaylas|cordillera (blanca|negra)|callej[oó]n de huaylas"
+
+# Tipos de señal, en orden de prioridad: (tipo, patrón, por qué importa para MH, siguiente paso sugerido).
+# "Pista de financiamiento" exige lenguaje explícito de convocatoria: la palabra "premio" sola NO basta.
+TIPOS_SENAL = [
+    ("Pista de financiamiento",
+     r"convocatoria|postula|postulaciones|fondos? concursables?|call for (proposals|applications)|applications? (are )?open|"
+     r"inscripciones abiertas|bases del concurso|subvenci",
+     "Menciona un fondo o concurso. No es una convocatoria verificada: hay que confirmar en la fuente oficial si una ONG peruana puede postular.",
+     "Verificar bases en la fuente oficial"),
+    ("Inversión social empresarial",
+     r"responsabilidad social|inversi[oó]n social|gesti[oó]n social|valor compartido|sostenibilidad|\brse\b|"
+     r"minera|empresa|compañ[ií]a|corporaci|grupo empresarial",
+     "Empresa con programas de impacto social: posible aliado corporativo o modelo de intervención a replicar.",
+     "Evaluar como prospecto en el CRM"),
+    ("Filantropía y cooperación",
+     r"fundaci[oó]n|cooperaci[oó]n|embajada|donaci[oó]n|dona |unicef|\bonu\b|\bbid\b|banco mundial|\bpma\b|\bops\b",
+     "Actor filantrópico o de cooperación activo en temas de MH: fuente potencial de recursos o alianzas.",
+     "Seguir y buscar un contacto"),
+    ("Política pública",
+     r"ministerio|minsa|minedu|midis|gobierno|congreso|\bley\b|programa nacional|municipalidad|regional|estado peruano",
+     "Programa o decisión pública que puede abrir convenios, fondos o cambiar prioridades en el territorio.",
+     "Monitorear y evaluar convenio"),
+    ("Tendencia y contexto", r".",
+     "Dato o tendencia útil como evidencia para propuestas y conversaciones con aliados.",
+     "Usar como evidencia en propuestas"),
+]
+# PROCIENCIA publica en su RSS contrataciones de personal: no son fondos.
+NO_ES_FONDO = r"-CS-INDV|consultor|especialista|analista|asistente|servicio de|t[eé]cnico en|l[ií]der t[eé]cnico|contrataci"
 
 
-def clasificar(texto: str, tipo_fuente: str) -> dict:
-    """Áreas MH que toca el ítem y si es una convocatoria (se puede postular) o una señal (noticia)."""
+def clasificar(texto: str, categoria: str) -> dict:
+    """Clase del ítem: 'Pista' (descubrimiento en agregadores, por verificar) o 'Señal' (noticia).
+    Ningún ítem de RSS es Convocatoria: esa clase la producen solo las fuentes oficiales."""
     t = texto.lower()
     areas = [a for a, rx in AREAS.items() if re.search(rx, t)]
-    es_conv = tipo_fuente in ("Agregador internacional", "Unión Europea") or bool(re.search(CONVOCATORIA, t))
-    return {"areas": areas, "clase": "Convocatoria" if es_conv else "Señal"}
+    en_ancash = bool(re.search(TERRITORIO, t))
+    if categoria == "Descubrimiento":
+        return {"areas": areas, "en_ancash": en_ancash, "clase": "Pista", "tipo_senal": "Convocatoria por verificar",
+                "por_que": "Publicada por un agregador: puede ser real, pero debe verificarse en la fuente oficial "
+                           "(elegibilidad para ONG peruanas, fecha y monto) antes de considerarla.",
+                "siguiente_paso": "Verificar en la fuente oficial"}
+    for tipo, rx, por_que, paso in TIPOS_SENAL:
+        if re.search(rx, t):
+            if en_ancash:
+                por_que += " Ocurre en Áncash, el territorio de MH."
+            if areas:
+                por_que += " Temas: " + ", ".join(areas) + "."
+            return {"areas": areas, "en_ancash": en_ancash, "clase": "Señal", "tipo_senal": tipo,
+                    "por_que": por_que, "siguiente_paso": paso}
 
 
-def _item(fuente, tipo, titulo, url, resumen, publicado, entidad=None, deadline=None):
+def _item(fuente, tipo, categoria, titulo, url, resumen, publicado, entidad=None):
     texto = f"{titulo}. {resumen}"
     return {"fuente": fuente, "tipo_fuente": tipo, "entidad": entidad, "titulo": titulo, "url": url,
-            "resumen": resumen, "publicado": publicado, "deadline": deadline or extraer_deadline(texto),
-            **clasificar(texto, tipo), **puntuar(texto)}
+            "resumen": resumen, "publicado": publicado, "deadline": extraer_deadline(texto),
+            **clasificar(texto, categoria), **puntuar(texto)}
 
 
 def leer_rss(f: dict, timeout=25) -> list:
@@ -246,6 +277,8 @@ def leer_rss(f: dict, timeout=25) -> list:
     items = []
     for it in raiz.iter("item"):
         titulo = limpiar_html(it.findtext("title"))
+        if re.search(NO_ES_FONDO, titulo, re.I):
+            continue
         entidad = limpiar_html(it.findtext("source")) or None
         if entidad and titulo.endswith(" - " + entidad):  # Google News agrega " - Medio" al título
             titulo = titulo[: -len(" - " + entidad)]
@@ -257,44 +290,8 @@ def leer_rss(f: dict, timeout=25) -> list:
             pub = parsedate_to_datetime(pub).date().isoformat() if pub else None
         except (TypeError, ValueError):
             pub = None
-        items.append(_item(f["fuente"], f["tipo"], titulo, (it.findtext("link") or "").strip(), desc[:600], pub, entidad))
-    return items
-
-
-def leer_ue(hoy: date, timeout=30) -> list:
-    """Convocatorias abiertas del portal Funding & Tenders (API pública 'SEDIA')."""
-    filtro = json.dumps({"bool": {"must": [{"terms": {"type": ["1", "2", "8"]}},
-                                            {"terms": {"status": ["31094501", "31094502"]}}]}})
-    items, vistos = [], set()
-    for q in EU_CONSULTAS:
-        frontera = uuid.uuid4().hex
-        cuerpo = "".join(f'--{frontera}\r\nContent-Disposition: form-data; name="{n}"\r\n'
-                         f"Content-Type: application/json\r\n\r\n{v}\r\n"
-                         for n, v in [("query", filtro), ("languages", '["en"]')]) + f"--{frontera}--\r\n"
-        url = f"{EU_API}?apiKey=SEDIA&pageSize=50&pageNumber=1&text={urllib.parse.quote(q)}"
-        req = urllib.request.Request(url, data=cuerpo.encode(), method="POST",
-                                     headers={**UA, "Content-Type": f"multipart/form-data; boundary={frontera}"})
-        with urllib.request.urlopen(req, timeout=timeout) as r:
-            datos = json.loads(r.read())
-        for res in datos.get("results", []):
-            md = res.get("metadata", {})
-
-            def g(k):
-                return (md.get(k) or [None])[0]
-
-            ident, dl = g("identifier"), (g("deadlineDate") or "")[:10]
-            if not ident or not ident.startswith("EuropeAid") or ident in vistos or not dl or dl < hoy.isoformat():
-                continue  # solo llamados EuropeAid con cierre futuro
-            vistos.add(ident)
-            titulo = limpiar_html(g("title") or res.get("summary") or ident)
-            resumen = limpiar_html(g("descriptionByte") or res.get("content") or "")[:560]
-            pais = PAISES_UE.get(ident.rsplit("/", 1)[-1])
-            if pais:  # el país solo viene en el código (…/ACT/PE): se agrega al texto para que el score lo vea
-                resumen = f"País: {pais} (América Latina). {resumen}"
-            link = res.get("url") or ("https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/"
-                                      f"opportunities/topic-details/{ident}")
-            items.append(_item("Unión Europea (Funding & Tenders)", "Unión Europea", f"{titulo} [{ident}]", link,
-                               resumen, (g("startDate") or "")[:10] or None, "Comisión Europea", dl))
+        items.append(_item(f["fuente"], f["tipo"], f["categoria"], titulo, (it.findtext("link") or "").strip(),
+                           desc[:600], pub, entidad))
     return items
 
 
@@ -306,6 +303,8 @@ def actualizar_historial(ruta: Path, nuevos: list, hoy: date) -> list:
         hist[it["url"]] = {**it, "primera_vez": previo.get("primera_vez", hoy.isoformat()), "ultima_vez": hoy.isoformat()}
     vigentes = {}
     for url, it in hist.items():
+        if "tipo_senal" not in it or it.get("clase") not in ("Señal", "Pista"):
+            continue  # formato anterior a la v2: se reclasifica cuando la fuente vuelva a publicarlo
         if it.get("deadline"):
             if date.fromisoformat(it["deadline"]) < hoy - timedelta(days=15):
                 continue  # cerró hace más de 15 días
@@ -317,28 +316,24 @@ def actualizar_historial(ruta: Path, nuevos: list, hoy: date) -> list:
 
 
 def main():
+    from fuentes_oficiales import CRITERIOS, DESCARTADAS, EVALUACION, recolectar
     ap = argparse.ArgumentParser()
     ap.add_argument("--min", type=int, default=0, help="score mínimo a mostrar")
     ap.add_argument("--web", type=Path, help="carpeta data/ de la web del Radar a actualizar")
     args = ap.parse_args()
     hoy = date.today()
 
-    resultados, estado = [], []
+    convocatorias, estado = recolectar(hoy)
+    resultados = []
     for f in FUENTES:
         try:
             items = leer_rss(f)
             resultados += items
-            estado.append({"fuente": f["fuente"], "tipo": f["tipo"], "ok": True, "items": len(items)})
+            estado.append({"fuente": f["fuente"], "tipo": f["tipo"], "categoria": f["categoria"], "ok": True,
+                           "items": len(items)})
         except Exception as e:  # una fuente caída no debe detener el radar
-            estado.append({"fuente": f["fuente"], "tipo": f["tipo"], "ok": False, "error": str(e)[:200]})
-    try:
-        items = leer_ue(hoy)
-        resultados += items
-        estado.append({"fuente": "Unión Europea (Funding & Tenders)", "tipo": "Unión Europea", "ok": True,
-                       "items": len(items)})
-    except Exception as e:
-        estado.append({"fuente": "Unión Europea (Funding & Tenders)", "tipo": "Unión Europea", "ok": False,
-                       "error": str(e)[:200]})
+            estado.append({"fuente": f["fuente"], "tipo": f["tipo"], "categoria": f["categoria"], "ok": False,
+                           "error": str(e)[:200]})
 
     vistos, unicos = set(), []
     for r in sorted(resultados, key=lambda x: -x["score"]):
@@ -350,29 +345,51 @@ def main():
     generado = datetime.now(timezone.utc).isoformat(timespec="seconds")  # con zona: el navegador lo pasa a hora local
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out = OUT_DIR / f"radar_{hoy.isoformat()}.json"
-    out.write_text(json.dumps({"generado": generado, "fuentes": estado, "items": unicos}, ensure_ascii=False, indent=2),
-                   encoding="utf-8")
+    out.write_text(json.dumps({"generado": generado, "fuentes": estado, "convocatorias": convocatorias, "items": unicos},
+                              ensure_ascii=False, indent=2), encoding="utf-8")
 
     if args.web:
         from fondos_recurrentes import FONDOS
         args.web.mkdir(parents=True, exist_ok=True)
+        # Si una fuente oficial falló hoy (p. ej., timeout), se conservan sus convocatorias de la última
+        # lectura exitosa, marcadas como tales, para que no desaparezcan de la web por un día.
+        previo = args.web / "radar.json"
+        caidas = {e["fuente"] for e in estado if e.get("categoria") == "Oficial" and not e["ok"]}
+        if caidas and previo.exists():
+            anteriores = json.loads(previo.read_text(encoding="utf-8")).get("convocatorias", [])
+            arrastre = [{**c, "notas": (c.get("notas", "") + f" (Dato de la última lectura exitosa: {c.get('verificado_el')}; "
+                                        "la fuente no respondió hoy).").strip()}
+                        for c in anteriores if c.get("fuente_nombre") in caidas]
+            convocatorias += arrastre
+            print(f"Fuentes caídas hoy: {sorted(caidas)} -> se conservan {len(arrastre)} convocatorias de la última lectura")
         acumulado = actualizar_historial(args.web / "historial.json", unicos, hoy)
-        (args.web / "radar.json").write_text(json.dumps(
-            {"generado": generado, "fuentes": estado, "umbrales": {"alta": UMBRAL_ALTA, "media": UMBRAL_MEDIA},
-             "items": sorted(acumulado, key=lambda x: (-x["score"], x["titulo"]))}, ensure_ascii=False), encoding="utf-8")
+        orden = lambda x: (-x["score"], x["titulo"])  # noqa: E731
+        (args.web / "radar.json").write_text(json.dumps({
+            "generado": generado, "fuentes": estado, "umbrales": {"alta": UMBRAL_ALTA, "media": UMBRAL_MEDIA},
+            "convocatorias": convocatorias,
+            "evaluacion": {"criterios": CRITERIOS,
+                           "fuentes": [{"fuente": f, "tipo": t, "notas": n, "uso": u, "puntajes": p} for f, t, p, u, n in EVALUACION],
+                           "descartadas": [{"fuente": f, "motivo": mo} for f, mo in DESCARTADAS]},
+            "pistas": sorted([i for i in acumulado if i["clase"] == "Pista"], key=orden),
+            "senales": sorted([i for i in acumulado if i["clase"] == "Señal"], key=orden)}, ensure_ascii=False), encoding="utf-8")
         # La web puede ser pública: se omite "relación existente MH" (dice con quién conversa MH).
         campos = ["fondo", "entidad", "tipo", "programa", "monto", "mes_apertura", "mes_cierre", "ultima_convocatoria",
                   None, "requisitos", "verificacion", "url"]
         fondos = [{c: v for c, v in zip(campos, f) if c} for f in FONDOS]
         (args.web / "fondos.json").write_text(json.dumps(fondos, ensure_ascii=False), encoding="utf-8")
-        print(f"Web actualizada: {args.web} ({len(acumulado)} ítems vigentes en historial)")
+        print(f"Web actualizada: {args.web} ({len(acumulado)} señales y pistas vigentes en historial)")
 
     for s in estado:
-        print(("OK " if s["ok"] else "ERR"), s["fuente"], s.get("items", s.get("error")))
-    print(f"\n{len(unicos)} ítems únicos hoy -> {out}")
+        print(("OK " if s["ok"] else "ERR"), f"[{s['categoria']}]", s["fuente"], s.get("detalle", s.get("items", s.get("error"))))
+    print(f"\nConvocatorias oficiales: {len(convocatorias)} · elegibles para MH: "
+          f"{sum(1 for c in convocatorias if c['componentes']['elegibilidad']['puntos'] > 0)}")
+    for c in convocatorias:
+        if c["componentes"]["elegibilidad"]["puntos"] > 0:
+            print(f"  [{c['afinidad']:>3}] {c['estado']:<30} {c['nombre'][:70]}")
+    print(f"\nSeñales y pistas de hoy: {len(unicos)} -> {out}")
     for r in unicos:
         if r["score"] >= args.min:
-            print(f"[{r['score']:>3} {r['nivel']:<5}] {r['clase']:<12} {r['titulo'][:90]}")
+            print(f"[{r['score']:>3}] {r['clase']:<6} {r['tipo_senal'][:26]:<26} {r['titulo'][:80]}")
 
 
 if __name__ == "__main__":

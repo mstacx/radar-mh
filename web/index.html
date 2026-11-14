@@ -4,122 +4,127 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Radar MH</title>
-  <meta name="description" content="Radar de oportunidades de financiamiento de Misión Huascarán: convocatorias reales, puntuadas por afinidad y actualizadas a diario.">
-  <link rel="stylesheet" href="styles.css?v=2">
+  <meta name="description" content="Radar de Misión Huascarán: convocatorias de financiamiento verificadas en fuentes oficiales y señales del ecosistema de desarrollo, actualizadas a diario.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
-  <header class="top">
-    <div class="marca">
-      <span class="logo" aria-hidden="true">MH</span>
-      <div>
+  <header class="cabecera">
+    <div class="cabecera-in">
+      <a class="marca" href="https://misionhuascaran.org.pe/" target="_blank" rel="noopener noreferrer" aria-label="Misión Huascarán (sitio oficial)">
+        <img src="img/logo_mh.svg" alt="Misión Huascarán" width="118" height="48">
+      </a>
+      <div class="titulo">
         <h1>Radar de oportunidades</h1>
-        <p class="sub">Misión Huascarán · Educación, Nutrición y Salud en Áncash</p>
+        <p>Convocatorias verificadas y señales del ecosistema para la educación, la nutrición y la salud en Áncash</p>
       </div>
+      <p id="estado" class="estado" role="status">Cargando datos…</p>
     </div>
-    <p id="estado" class="estado" role="status">Cargando datos…</p>
+    <nav class="tabs" role="tablist" aria-label="Secciones del Radar">
+      <button role="tab" data-vista="resumen" aria-selected="true">Resumen</button>
+      <button role="tab" data-vista="convocatorias">Convocatorias <span class="n" id="n-conv"></span></button>
+      <button role="tab" data-vista="senales">Señales <span class="n" id="n-sen"></span></button>
+      <button role="tab" data-vista="calendario">Calendario de fondos</button>
+      <button role="tab" data-vista="metodo">Fuentes y método</button>
+    </nav>
   </header>
-
-  <nav class="tabs" role="tablist" aria-label="Secciones">
-    <button role="tab" data-vista="resumen" aria-selected="true">Resumen</button>
-    <button role="tab" data-vista="convocatorias">Convocatorias <span class="n" id="n-conv"></span></button>
-    <button role="tab" data-vista="senales">Señales <span class="n" id="n-sen"></span></button>
-    <button role="tab" data-vista="fondos">Fondos recurrentes</button>
-    <button role="tab" data-vista="metodo">Fuentes y método</button>
-  </nav>
 
   <main>
     <!-- RESUMEN -->
-    <section id="v-resumen" class="vista">
+    <section id="v-resumen" class="vista" aria-labelledby="t-resumen">
+      <h2 id="t-resumen" class="oculto">Resumen</h2>
       <div class="kpis" id="kpis"></div>
+      <div class="panel accion" id="accion"></div>
       <div class="dos">
         <div class="panel">
-          <h2>Mejores convocatorias vigentes</h2>
-          <p class="nota">Solo las que superan el mínimo de afinidad (score ≥ 15).</p>
-          <ol class="lista" id="top-conv"></ol>
+          <div class="panel-cab"><h3>Convocatorias con mayor afinidad para MH</h3><button class="link" data-ir="convocatorias">Ver todas →</button></div>
+          <div id="top-conv" class="lista-compacta"></div>
         </div>
         <div class="panel">
-          <h2>Cierran pronto</h2>
-          <ol class="lista" id="cierran"></ol>
+          <div class="panel-cab"><h3>Señales destacadas</h3><button class="link" data-ir="senales">Ver todas →</button></div>
+          <div id="top-sen" class="lista-compacta"></div>
         </div>
       </div>
-      <div class="panel">
-        <h2>Fondos recurrentes para preparar</h2>
-        <ol class="lista" id="fondos-pronto"></ol>
+    </section>
+
+    <!-- CONVOCATORIAS -->
+    <section id="v-convocatorias" class="vista" hidden aria-labelledby="t-conv">
+      <div class="intro intro-conv">
+        <div>
+          <h2 id="t-conv">Convocatorias de financiamiento</h2>
+          <p>Solo oportunidades publicadas por la entidad que financia, con condiciones consultables. La <b>afinidad con MH (0-100)</b> pondera temática, geografía, <b>elegibilidad real de una ONG peruana</b>, encaje institucional y condiciones financieras.</p>
+        </div>
+        <span class="sello">Fuente oficial verificada</span>
       </div>
+      <div class="filtros" id="f-conv"></div>
+      <div class="tarjetas" id="lista-conv"></div>
+      <details class="pistas" id="bloque-pistas">
+        <summary><span>Pistas por verificar</span> <span class="n" id="n-pistas"></span>
+          <small>Publicadas por agregadores. No son convocatorias hasta confirmarlas en la fuente oficial.</small></summary>
+        <div id="lista-pistas" class="lista-pistas"></div>
+      </details>
     </section>
 
-    <!-- CONVOCATORIAS / SEÑALES (misma plantilla) -->
-    <section id="v-convocatorias" class="vista" hidden>
-      <p class="ayuda">Convocatorias a las que una ONG puede postular, leídas de fuentes reales y ordenadas por <b>afinidad con MH</b> (0-100). Pasa el cursor por el puntaje para ver por qué obtuvo esa nota.</p>
-      <div class="filtros" data-para="convocatorias"></div>
-      <div class="tarjetas" id="lista-convocatorias"></div>
-    </section>
-    <section id="v-senales" class="vista" hidden>
-      <p class="ayuda">Noticias que no son convocatorias, pero sirven para actuar: un fondo que se anuncia, una empresa que invierte en Áncash, un premio que se abre. Son buenas razones para escribir a un aliado o prospecto.</p>
-      <div class="filtros" data-para="senales"></div>
-      <div class="tarjetas" id="lista-senales"></div>
+    <!-- SEÑALES -->
+    <section id="v-senales" class="vista" hidden aria-labelledby="t-sen">
+      <div class="intro intro-sen">
+        <div>
+          <h2 id="t-sen">Señales del ecosistema</h2>
+          <p>Noticias, iniciativas empresariales, filantropía, política pública y tendencias que pueden anticipar alianzas o recursos. <b>No ofrecen financiamiento directo</b>: cada una explica por qué importa a MH y qué hacer con ella.</p>
+        </div>
+        <span class="sello sello-sen">Inteligencia estratégica</span>
+      </div>
+      <div class="filtros" id="f-sen"></div>
+      <div class="tarjetas" id="lista-sen"></div>
     </section>
 
-    <!-- FONDOS -->
-    <section id="v-fondos" class="vista" hidden>
-      <p class="ayuda">Fondos que abren todos los años o reciben postulaciones de forma continua. Se avisa con <b>90 días</b> de anticipación, porque preparar una postulación toma tiempo. Los meses marcados como estimados se deben verificar con la fuente.</p>
+    <!-- CALENDARIO -->
+    <section id="v-calendario" class="vista" hidden aria-labelledby="t-cal">
+      <div class="intro">
+        <div>
+          <h2 id="t-cal">Calendario de fondos recurrentes</h2>
+          <p>Fondos que abren cada año o reciben postulaciones de forma continua. Se avisa con <b>90 días</b> de anticipación, porque preparar una buena postulación toma tiempo.</p>
+        </div>
+      </div>
+      <div class="meses" id="meses" aria-label="Aperturas por mes"></div>
       <div class="tarjetas" id="lista-fondos"></div>
     </section>
 
     <!-- MÉTODO -->
-    <section id="v-metodo" class="vista" hidden>
-      <div class="dos">
-        <div class="panel">
-          <h2>Estado de las fuentes</h2>
-          <table class="tabla" id="tabla-fuentes"></table>
+    <section id="v-metodo" class="vista" hidden aria-labelledby="t-met">
+      <div class="intro">
+        <div>
+          <h2 id="t-met">Fuentes y método</h2>
+          <p>Preferimos pocas fuentes oficiales con información estructurada antes que muchas de baja confiabilidad. Cada fuente se evaluó del 1 al 5 en siete criterios.</p>
         </div>
+      </div>
+      <div class="panel"><h3>Evaluación de fuentes</h3><div class="tabla-scroll"><table class="tabla" id="tabla-eval"></table></div></div>
+      <div class="dos">
+        <div class="panel"><h3>Estado de las fuentes hoy</h3><div class="tabla-scroll"><table class="tabla" id="tabla-estado"></table></div></div>
         <div class="panel">
-          <h2>Cómo se calcula la afinidad</h2>
-          <table class="tabla">
-            <thead><tr><th>Componente</th><th>Tope</th><th>Ejemplos</th></tr></thead>
-            <tbody>
-              <tr><td>Área MH</td><td>+40</td><td>anemia, nutrición, primera infancia, educación, telemedicina, salud</td></tr>
-              <tr><td>Geografía</td><td>+30</td><td>Perú, Áncash, Andes, América Latina</td></tr>
-              <tr><td>Elegibilidad ONG</td><td>+20</td><td>ONG, sin fines de lucro, sociedad civil</td></tr>
-              <tr><td>Población</td><td>+15</td><td>rural, niños, indígena, comunidades</td></tr>
-              <tr><td>Exclusiones</td><td>−40</td><td>becas, startups, programas de otros continentes</td></tr>
-            </tbody>
-          </table>
-          <p class="nota"><b>Alta ≥ 55</b> · <b>Media 35–54</b> · Baja &lt; 35. Es la misma fórmula que la hoja Radar del MH Fundraising Hub: los pesos se editan allí y en <code>radar_convocatorias.py</code>.</p>
-          <h2>Qué es y qué no es</h2>
-          <ul class="nota">
-            <li>Todo lo que ves fue leído de una fuente pública. Nada se inventa y cada tarjeta enlaza a su origen.</li>
-            <li>Un día sin convocatorias de afinidad alta es un resultado real: el filtro está descartando ruido.</li>
-            <li>El pipeline de postulaciones, los contactos y los convenios de MH <b>no</b> están aquí: viven en el Hub (Excel interno), porque esta página puede ser pública.</li>
-            <li>Favoritos y descartados se guardan solo en este navegador. Para trabajar una oportunidad, usa «Copiar para el Hub».</li>
+          <h3>Cómo se calcula la afinidad con MH</h3>
+          <div id="modelo"></div>
+          <h3 class="mt">Reglas de clasificación</h3>
+          <ul class="reglas">
+            <li><b>Convocatoria:</b> entidad convocante identificada, condiciones consultables y fuente oficial. Nada más entra aquí.</li>
+            <li><b>Pista por verificar:</b> convocatoria vista en un agregador. Pasa a Convocatorias solo cuando se confirma en la fuente original.</li>
+            <li><b>Señal:</b> noticia o iniciativa relevante que no ofrece financiamiento al que se pueda postular. Una empresa con proyectos sociales <i>no</i> es una convocatoria.</li>
+            <li>Ningún dato se inventa: si el monto no está publicado, se indica «No especificado».</li>
           </ul>
+          <h3 class="mt">Fuentes descartadas</h3>
+          <ul class="reglas" id="descartadas"></ul>
         </div>
       </div>
     </section>
   </main>
 
   <footer class="pie">
-    <span>MH Fundraising Hub · Radar · 180 Degrees Consulting UP</span>
-    <button id="exportar" class="btn-sec">Descargar CSV de lo filtrado</button>
+    <span>Radar · MH Fundraising Hub · 180 Degrees Consulting UP · Solo datos públicos: no contiene información interna de MH.</span>
+    <button id="exportar" class="btn btn-sec">Descargar CSV</button>
   </footer>
 
-  <template id="tpl-tarjeta">
-    <article class="tarjeta">
-      <div class="t-cab">
-        <span class="fuente"></span>
-        <span class="badges"></span>
-      </div>
-      <h3><a target="_blank" rel="noopener noreferrer"></a></h3>
-      <p class="resumen"></p>
-      <div class="t-meta"></div>
-      <div class="t-acciones">
-        <button class="fav" aria-pressed="false" title="Marcar como favorita">☆ Favorita</button>
-        <button class="copiar" title="Copia una fila lista para pegar en la hoja Radar del Hub">Copiar para el Hub</button>
-        <button class="descartar" title="Ocultar en este navegador">Descartar</button>
-      </div>
-    </article>
-  </template>
-
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>
