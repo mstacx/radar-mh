@@ -3791,5 +3791,38 @@
   "palabras": [],
   "primera_vez": "2026-11-14",
   "ultima_vez": "2026-11-14"
+ },
+ "https://news.google.com/rss/articles/CBMiqAFBVV95cUxQLU43NGRhMnFxSFZzMjNSVmJSallTZGd4OXk5THd5WDZnWmNKMXBoMHI5YVI1U2tXc1hTSWZNN042TmZiSVdsR296RlpHNnZwYkxLdlN4aEV0VnhCWUd5U3BXZDhyVDBkWjdzaV9reC10alM3ZFhNcGZTdUwyRXlGdXU3VWFQQTRHemxqdEY4bkdYcmhNMFZuc0pOZmducVE4VXFFZGRqZWo?oc=5": {
+  "fuente": "Google News: anemia y nutrición",
+  "tipo_fuente": "Búsqueda en noticias",
+  "entidad": "El Mercurio",
+  "titulo": "Azuay y Cañar elevan índices de desnutrición crónica infantil",
+  "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxQLU43NGRhMnFxSFZzMjNSVmJSallTZGd4OXk5THd5WDZnWmNKMXBoMHI5YVI1U2tXc1hTSWZNN042TmZiSVdsR296RlpHNnZwYkxLdlN4aEV0VnhCWUd5U3BXZDhyVDBkWjdzaV9reC10alM3ZFhNcGZTdUwyRXlGdXU3VWFQQTRHemxqdEY4bkdYcmhNMFZuc0pOZmducVE4VXFFZGRqZWo?oc=5",
+  "resumen": "",
+  "publicado": "2026-11-11",
+  "deadline": null,
+  "areas": [
+   "Nutrición"
+  ],
+  "en_ancash": false,
+  "clase": "Señal",
+  "tipo_senal": "Tendencia y contexto",
+  "por_que": "Dato o tendencia útil como evidencia para propuestas y conversaciones con aliados. Temas: Nutrición.",
+  "siguiente_paso": "Usar como evidencia en propuestas",
+  "score": 27,
+  "nivel": "Baja",
+  "detalle": {
+   "Area": 27,
+   "Geo": 0,
+   "Contexto": 0,
+   "Elegibilidad": 0,
+   "Negativa": 0
+  },
+  "palabras": [
+   "desnutricion",
+   "nutricion"
+  ],
+  "primera_vez": "2026-11-14",
+  "ultima_vez": "2026-11-14"
  }
 }
